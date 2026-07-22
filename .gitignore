@@ -52,3 +52,4 @@ Thumbs.db
 
 # Chrysalide testing scripts
 test_run.py
+e2e_calculator.py

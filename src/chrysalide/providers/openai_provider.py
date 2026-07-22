@@ -43,7 +43,12 @@ class OpenAIProvider(WorkerProvider):
         }
         
         if tools:
-            openai_tools = [{"type": "function", "function": t} for t in tools]
+            openai_tools = []
+            for t in tools:
+                if t.get("type") == "function" and "function" in t:
+                    openai_tools.append(t)
+                else:
+                    openai_tools.append({"type": "function", "function": t})
             kwargs["tools"] = openai_tools
             
         response = await self.client.chat.completions.create(**kwargs)

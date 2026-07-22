@@ -28,6 +28,9 @@ def create_provider(spec: str) -> WorkerProvider:
     elif provider_name == "azure":
         from .azure_provider import AzureProvider
         return AzureProvider(model)
+    elif provider_name in ("azure_apim", "apim"):
+        from .azure_apim_provider import AzureAPIMProvider
+        return AzureAPIMProvider(model)
     else:
         raise ValueError(f"Provider inconnu: {provider_name}")
 

@@ -2,6 +2,12 @@ import sys
 import logging
 import asyncio
 
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
 from chrysalide.server import main as server_main
 
 logging.basicConfig(

@@ -47,7 +47,12 @@ class AzureProvider(WorkerProvider):
         }
         
         if tools:
-            azure_tools = [{"type": "function", "function": t} for t in tools]
+            azure_tools = []
+            for t in tools:
+                if t.get("type") == "function" and "function" in t:
+                    azure_tools.append(t)
+                else:
+                    azure_tools.append({"type": "function", "function": t})
             kwargs["tools"] = azure_tools
             
         response = await self.client.chat.completions.create(**kwargs)

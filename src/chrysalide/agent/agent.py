@@ -124,7 +124,7 @@ class ChrysalideAgent:
             wall_time_sec=time.time() - self.state.start_time,
         )
         try:
-            await self.store.update_job_progress(self.job_id, prog)
+            await self.store.update_progress(self.job_id, prog)
         except Exception as e:
             logger.warning(f"Failed to update job progress for {self.job_id}: {e}")
 

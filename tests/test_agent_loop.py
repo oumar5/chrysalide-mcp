@@ -245,7 +245,7 @@ async def test_progress_update_failure_does_not_crash(sandbox_with_tmp):
     sandbox_with_tmp.execute.return_value = (0, b"OK", b"")
 
     failing_store = AsyncMock()
-    failing_store.update_job_progress.side_effect = RuntimeError("db down")
+    failing_store.update_progress.side_effect = RuntimeError("db down")
 
     agent = ChrysalideAgent(
         provider=provider,
@@ -258,7 +258,7 @@ async def test_progress_update_failure_does_not_crash(sandbox_with_tmp):
 
     assert report.status == JobStatus.DONE
     # progress was attempted at least once
-    assert failing_store.update_job_progress.await_count >= 1
+    assert failing_store.update_progress.await_count >= 1
 
 
 @pytest.mark.asyncio

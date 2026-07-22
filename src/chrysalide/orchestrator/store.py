@@ -14,8 +14,8 @@ def get_current_time():
 class JobStore:
     def __init__(self, db_path: Optional[str] = None):
         if not db_path:
-            db_path = os.getenv("CHRYSALIDE_STORE_PATH", os.path.expanduser("~/.chrysalide/jobs.db"))
-        self.db_path = Path(db_path)
+            db_path = os.getenv("CHRYSALIDE_STORE_PATH", "~/.chrysalide/jobs.db")
+        self.db_path = Path(os.path.expanduser(db_path)).expanduser()
         self.db_path.parent.mkdir(parents=True, exist_ok=True)
         self._init_sync()
         

@@ -136,7 +136,7 @@ class ReportPayload(BaseModel):
     wall_time_sec: float
     tokens_used: TokenUsage
     provider: ProviderInfo
-    plan: Optional[str] = None
+    plan: Optional[Dict] = None
     files_changed: List[FileChanged] = []
     diff_summary: DiffSummary
     commands_executed: List[CommandExecuted] = []

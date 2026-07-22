@@ -1,14 +1,13 @@
 import asyncio
 import logging
 from typing import Dict, Any, Optional
+from pathlib import Path
 
-from chrysalide.models import JobConfig
+from chrysalide.models import JobConfig, JobStatus, ReportPayload
 from chrysalide.orchestrator.store import JobStore
 from chrysalide.sandbox import GitWorktreeSandbox
-from chrysalide.agent import ChrysalideAgent
+from chrysalide.agent.agent import ChrysalideAgent
 from chrysalide.providers import get_default_provider
-
-from chrysalide.models import JobConfig, JobStatus
 
 logger = logging.getLogger(__name__)
 
@@ -24,19 +23,20 @@ class ChrysalideEngine:
             provider = get_default_provider()
             
             async with GitWorktreeSandbox(str(request.repo_path), job_id=job_id, persist=True, allow_network=request.allow_network) as sandbox:
-                agent = ChrysalideAgent(provider, sandbox)
-                
-                system_prompt = (
-                    "Tu es Chrysalide, un agent de codage asynchrone autonome. "
-                    "Tu opères dans un espace de travail git (sandbox). "
-                    "Tu as accès aux outils pour lire/écrire des fichiers et exécuter des commandes shell ou git. "
-                    "Utilise ces outils pour accomplir la tâche suivante. "
-                    "Lorsque la tâche est terminée, cesse d'appeler des outils pour terminer ton exécution."
+                agent = ChrysalideAgent(
+                    provider=provider, 
+                    sandbox=sandbox,
+                    job_id=job_id,
+                    store=self.store,
+                    budget=request.budget,
+                    constraints=request.constraints
                 )
                 
-                result = await agent.run(request.goal, system_prompt)
+                # The agent handles the 4 phases and returns the ReportPayload
+                report = await agent.run(request.goal)
                 
-                final_status = JobStatus(result.get("status", "FAILED").upper())
+                final_status = JobStatus(report.status)
+                await self.store.update_report(job_id, report)
                 await self.store.update_job(job_id, final_status)
                 
         except asyncio.CancelledError:

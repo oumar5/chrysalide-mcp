@@ -130,7 +130,7 @@ class ReportPayload(BaseModel):
     summary: str
     goal: str
     created_at: datetime
-    completed_at: Optional[datetime]
+    completed_at: Optional[datetime] = None
     iterations_used: int
     iterations_max: int
     wall_time_sec: float
